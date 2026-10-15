@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For You, Bubbi</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --forest: #203623;
+  --sage: #839276;
+  --cream: #f3e9dc;
+  --gold: #ae966a;
+  --ink: #29372c;
+}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle, #faf7f0, #e9e5db);
+  color: var(--ink);
+  font-family: "Special Elite", monospace;
+}
+main {
+  max-width: 1000px;
+  margin: auto;
+  padding: 35px 12px;
+  text-align: center;
+}
+h1, h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+}
+h1 {
+  font-size: clamp(44px, 7vw, 72px);
+  font-style: italic;
+  margin: 0 0 8px;
+}
+.subtitle {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #64715e;
+}
+.rule {
+  width: 150px;
+  height: 1px;
+  margin: 20px auto;
+  background: var(--gold);
+}
+.stage {
+  position: relative;
+  width: min(92vw, 650px);
+  height: 650px;
+  margin: auto;
+  display: grid;
+  place-items: center;
+}
+.box {
+  width: 245px;
+  height: 245px;
+  border: 0;
+  background: linear-gradient(135deg, #405c43, var(--forest));
+  color: var(--cream);
+  clip-path: polygon(
+    50% 0%, 97.55% 34.55%, 79.39% 90.45%,
+    20.61% 90.45%, 2.45% 34.55%
+  );
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  cursor: pointer;
+  z-index: 3;
+  transition: transform .7s;
+}
+.box .small {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.box .big {
+  font: italic 38px "Cormorant Garamond", serif;
+}
+.opening {
+  position: absolute;
+  z-index: 4;
+  width: 290px;
+  padding: 28px 20px;
+  background: var(--cream);
+  border: 1px solid var(--gold);
+  box-shadow: 0 10px 32px #20362335;
+  transform: rotate(-3deg);
+  cursor: pointer;
+  transition: transform .5s, opacity .5s;
+}
+.opening h2 {
+  font-size: 38px;
+  margin: 0;
+}
+.opening p {
+  font-size: 13px;
+  line-height: 1.9;
+}
+.opening small { color: #776c5b; }
+.opening.gone {
+  opacity: 0;
+  transform: translateY(-130px) rotate(12deg);
+  pointer-events: none;
+}
+.panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 155px;
+  min-height: 100px;
+  padding: 12px;
+  background: #f8f1e7;
+  border: 1px solid #cbb999;
+  box-shadow: 0 7px 18px #29372c25;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(.3);
+  transition: transform .8s, opacity .5s;
+}
+.panel strong {
+  display: block;
+  font: italic 23px "Cormorant Garamond", serif;
+}
+.panel span {
+  display: block;
+  margin-top: 10px;
+  font-size: 9px;
+  color: #777060;
+}
+.stage.unfolded .panel {
+  opacity: 1;
+  pointer-events: auto;
+}
+.stage.unfolded .p1 {
+  transform: translate(-50%, -50%) translateY(-240px);
+}
+.stage.unfolded .p2 {
+  transform: translate(-50%, -50%) translate(220px,-80px) rotate(8deg);
+}
+.stage.unfolded .p3 {
+  transform: translate(-50%, -50%) translate(140px,185px) rotate(-5deg);
+}
+.stage.unfolded .p4 {
+  transform: translate(-50%, -50%) translate(-140px,185px) rotate(5deg);
+}
+.stage.unfolded .p5 {
+  transform: translate(-50%, -50%) translate(-220px,-80px) rotate(-8deg);
+}
+.stage.unfolded .box { transform: scale(.8); }
+.instructions {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #697463;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: #14251bd9;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+}
+.overlay.visible { display: flex; }
+.letter {
+  width: min(520px, 100%);
+  max-height: 85vh;
+  overflow: auto;
+  padding: 35px;
+  text-align: left;
+  background: #fbf5ea;
+  border: 1px solid var(--gold);
+}
+.letter h2 {
+  font-size: 42px;
+  font-style: italic;
+  margin: 0 0 15px;
+}
+.letter p {
+  font-size: 14px;
+  line-height: 1.9;
+  white-space: pre-line;
+}
+.close {
+  display: block;
+  margin: 24px 0 0 auto;
+  padding: 10px 18px;
+  border: 0;
+  background: var(--forest);
+  color: white;
+  font-family: inherit;
+  cursor: pointer;
+}
+@media (max-width: 650px) {
+  .stage { height: 510px; }
+  .box { width: 175px; height: 175px; }
+  .panel { width: 118px; min-height: 90px; }
+  .panel strong { font-size: 19px; }
+  .stage.unfolded .p1 {
+    transform: translate(-50%,-50%) translateY(-204px);
+  }
+  .stage.unfolded .p2 {
+    transform: translate(-50%,-50%) translate(122px,-95px);
+  }
+  .stage.unfolded .p3 {
+    transform: translate(-50%,-50%) translate(93px,151px);
+  }
+  .stage.unfolded .p4 {
+    transform: translate(-50%,-50%) translate(-93px,151px);
+  }
+  .stage.unfolded .p5 {
+    transform: translate(-50%,-50%) translate(-122px,-95px);
+  }
+}
+</style>
+</head>
+
+<body>
+<main>
+  <div class="subtitle">A little something, just for you</div>
+  <h1>Our Little Story</h1>
+  <div class="rule"></div>
+  <p class="subtitle">Layer One · Meeting You</p>
+
+  <section class="stage" id="stage">
+
+    <button class="panel p1" data-memory="profile">
+      <strong>The Boy Behind the Profile</strong>
+      <span>Open this memory</span>
+    </button>
+
+    <button class="panel p2" data-memory="hide">
+      <strong>Hide & Seek</strong>
+      <span>Open this memory</span>
+    </button>
+
+    <button class="panel p3" data-memory="talk">
+      <strong>You Made Talking Easy</strong>
+      <span>Open this memory</span>
+    </button>
+
+    <button class="panel p4" data-memory="timeline">
+      <strong>Our Little Timeline</strong>
+      <span>Open this memory</span>
+    </button>
+
+    <button class="panel p5" data-memory="questions">
+      <strong>The Questions</strong>
+      <span>Open this memory</span>
+    </button>
+
+    <button class="box" id="box">
+      <span class="small">FOR YOU, BUBBI</span>
+      <span class="big">with love</span>
+      <span class="small">✧</span>
+    </button>
+
+    <div class="opening" id="opening"
+         role="button" tabindex="0">
+      <h2>Meeting You</h2>
+      <p>
+        "Where'd you get that?"<br>
+        "...Where'd I get what?"<br>
+        "Your smile. It's pretty."
+      </p>
+      <small>Click to open our story ↗</small>
+    </div>
+  </section>
+
+  <p class="instructions">
+    Click the opening card, then explore the five memories.
+  </p>
+</main>
+
+<div class="overlay" id="overlay"
+     role="dialog" aria-modal="true"
+     aria-labelledby="letterTitle">
+  <article class="letter">
+    <h2 id="letterTitle"></h2>
+    <p id="letterText"></p>
+    <button class="close" id="close">Close ×</button>
+  </article>
+</div>
+
+<script>
+const stage = document.getElementById("stage");
+const opening = document.getElementById("opening");
+const box = document.getElementById("box");
+const overlay = document.getElementById("overlay");
+
+const memories = {
+  profile: {
+    title: "The Boy Behind the Profile",
+    text: `I used to look at your profile every day.
+
+Your love of reading, music, pizza, and adventure made me curious about all the stories behind that handsome face.`
+  },
+  hide: {
+    title: "Hide & Seek",
+    text: `Remember our ridiculous hide-and-seek game?
+
+And my drawing of someone hiding in a dryer?
+
+That was one of the first times I realized how much fun I could have being silly with you.`
+  },
+  talk: {
+    title: "You Made Talking Easy",
+    text: `You asked real questions. You listened.
+
+You made me want to know you, and to let you know me.
+
+I knew I had to be careful, because I could feel myself beginning to fall.`
+  },
+  timeline: {
+    title: "Our Little Timeline",
+    text: `June 14 — Our first chat.
+
+June 20 — I knew you were different.
+
+July 12 — I decided to risk falling for you.
+
+July 18 — You asked me to be yours.`
+  },
+  questions: {
+    title: "The Questions That Drew Me In",
+    text: `What's your dream?
+
+What turns you on and what turns you off?
+
+Do you want a big family?
+
+Can we make Wasian babies?
+
+I loved how curious you were about everything.`
+  }
+};
+
+function unfold() {
+  opening.classList.add("gone");
+  stage.classList.add("unfolded");
+}
+
+function toggleBox() {
+  if (stage.classList.contains("unfolded")) {
+    stage.classList.remove("unfolded");
+    opening.classList.remove("gone");
+  } else {
+    unfold();
+  }
+}
+
+opening.addEventListener("click", unfold);
+opening.addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    unfold();
+  }
+});
+box.addEventListener("click", toggleBox);
+
+document.querySelectorAll(".panel").forEach(panel => {
+  panel.addEventListener("click", () => {
+    const memory = memories[panel.dataset.memory];
+    document.getElementById("letterTitle").textContent =
+      memory.title;
+    document.getElementById("letterText").textContent =
+      memory.text;
+    overlay.classList.add("visible");
+  });
+});
+
+function closeLetter() {
+  overlay.classList.remove("visible");
+}
+document.getElementById("close").onclick = closeLetter;
+overlay.addEventListener("click", e => {
+  if (e.target === overlay) closeLetter();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeLetter();
+});
+</script>
+</body>
+</html>
